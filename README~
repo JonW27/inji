@@ -1,0 +1,5 @@
+Bresenham Line Algorithm
+
+Compile with make. It uses rustc, instead of cargo now, for building.
+
+It should work, if I somehow got past this small little pass by value thing, which is not letting me update my vector arrays in the main file.
