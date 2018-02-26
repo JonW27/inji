@@ -3,7 +3,16 @@ use display;
 pub use matrix::Matrix;
 
 pub fn add_point( points : &mut Matrix, x : i64, y : i64, z : i64){
-    points.m.push(vec![x, y, z]);
+    if points.lastcol >= points.m.len() as i64 {
+        points.m.push(vec![x, y, z, 1]);
+    }
+    else{
+        let ind = points.lastcol as usize;
+        points.m[ind][0] = x;
+        points.m[ind][1] = y;
+        points.m[ind][2] = z;
+        points.m[ind][3] = 1;
+    }
     points.lastcol += 1;
 }
 

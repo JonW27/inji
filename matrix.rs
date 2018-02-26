@@ -13,9 +13,9 @@ pub fn print_matrix( m : Matrix){
     for m_col in m_cols {
         let m_rows = m_col.iter();
         for val in m_rows {
-            println!("{} ", val);
+            print!("{} ", val);
         }
-        println!("\n");
+        println!("");
     }
 }
 
