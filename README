@@ -2,4 +2,4 @@ Edge Matrices
 
 Compile with make. It uses rustc, instead of cargo now, for building.
 
-It compiles. Testing should be done shortly.
+It compiles. It runs. It works. 

@@ -9,7 +9,7 @@ const RED:usize = 0;
 const GREEN:usize = 1;
 const BLUE:usize = 2;
 
-static DEFAULT_COLOR : [i64; 3] = [0, 0, 0];
+static DEFAULT_COLOR : [i64; 3] = [255, 255, 255];
 
 pub fn new_screen(width : i64, height : i64) -> Vec<Vec<[i64; 3]>>{
     let mut screen : Vec<Vec<[i64; 3]>> = Vec::new();

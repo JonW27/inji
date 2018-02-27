@@ -21,8 +21,8 @@ pub fn add_edge( points : &mut Matrix, x0 : i64, y0 : i64, z0 : i64, x1 : i64, y
     add_point(points, x1, y1, z1);
 }
 
-pub fn draw_lines( points : Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
-    let m = points.m;
+pub fn draw_lines( points : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
+    let m = &points.m;
     let mut pastPoint : Vec<i64> = Vec::new();
     for i in 0..m.len(){
         if i % 2 != 0{

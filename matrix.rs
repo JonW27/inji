@@ -6,7 +6,7 @@ pub struct Matrix{
     pub lastcol : i64,
 }
 
-pub fn print_matrix( m : Matrix){
+pub fn print_matrix( m : & Matrix){
     // iterators!
     let m_cols = m.m.iter();
 
@@ -35,10 +35,10 @@ pub fn ident(m : &mut Matrix){
     }
 }
 
-pub fn matrix_mult(a : Matrix, b : Matrix) -> Matrix{
+pub fn matrix_mult(a : &mut Matrix, b : &mut Matrix) -> Matrix{
 
-    let a_refs = a.m;
-    let b_refs = b.m;
+    let a_refs = &a.m;
+    let b_refs = &b.m;
 
     let mut c = new_matrix(a_refs.len() as i64, b_refs.len() as i64);
 
@@ -71,6 +71,10 @@ pub fn new_matrix(rows : i64, cols: i64) -> Matrix {
         lastcol : 0,
     }
 }
+
+/*pub fn setVal(row: i64, col: i64){
+
+}*/
 
 // no need to free matrix since rust takes care of it with scopes!
 
