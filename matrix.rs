@@ -6,6 +6,26 @@ pub struct Matrix{
     pub lastcol : i64,
 }
 
+pub fn make_translate(x : f64, y : f64, z : f64){
+    
+}
+
+pub fn make_scale(x : f64, y : f64, z : f64){
+
+}
+
+pub fn make_rotX(theta : f64){
+
+}
+
+pub fn make_rotY(theta : f64){
+
+}
+
+pub fn make_rotZ(theta : f64){
+
+}
+
 pub fn print_matrix( m : & Matrix){
     // iterators!
     let m_cols = m.m.iter();
