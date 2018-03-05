@@ -8,9 +8,9 @@ pub struct Matrix{
 
 pub fn make_translate(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
-    trans.m[3][0] = x as i64;
-    trans.m[3][1] = y as i64;
-    trans.m[3][2] = z as i64;
+    trans.m[0][0] = x as i64;
+    trans.m[1][1] = y as i64;
+    trans.m[2][2] = z as i64;
     trans.m[3][3] = 1 as i64;
     trans
 }
