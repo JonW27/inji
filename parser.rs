@@ -4,8 +4,7 @@ use std::fs::File;
 
 pub use matrix::*;
 pub use draw::*;
-pub use display::save_ppm;
-pub use display::clear_screen;
+pub use display::{save_ppm, clear_screen, display};
 
 pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64; 3]>>){
 
@@ -65,9 +64,12 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
         } else if line == "display"{
             clear_screen(&mut s);
             draw_lines(&mut e, &mut s, [0, 0, 0]);
+            display(&mut s);
             println!("display");
             cnt += 1;
         } else if line == "save" {
+            clear_screen(&mut s);
+            draw_lines(&mut e, &mut s, [0, 0, 0]);
             save_ppm(&mut s, lines[cnt+1].to_string());
             println!("save {:?}", lines[cnt+1]);
             cnt += 1;
