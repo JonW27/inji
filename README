@@ -1,5 +1,9 @@
-Edge Matrices
+Transformations
 
 Compile with make. It uses rustc, instead of cargo now, for building.
 
-It compiles. It runs. It works. 
+Includes:
+* Scaling
+* Translations
+* Rotations
+

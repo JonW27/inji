@@ -35,7 +35,7 @@ pub fn plot( screen : &mut Vec<Vec<[i64; 3]>>, color : [i64; 3], x : i64, y : i6
     }
 }
 
-pub fn clear_screen( mut screen : Vec<Vec<[i64; 3]>> ){
+pub fn clear_screen( screen : &mut Vec<Vec<[i64; 3]>> ){
     for y in 0..screen.len() {
         let ny = y as usize;
         for x in 0..screen[ny].len() {
