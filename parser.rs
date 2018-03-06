@@ -26,7 +26,7 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
     while cnt < lines.len() - 1{
         let line = &lines[cnt];
         if line == "line"{
-            let args = lines[cnt+1].split(" ").map(|l| l.parse::<i64>().unwrap()).collect::<Vec<i64>>();
+            let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             add_edge(&mut e, args[0], args[1], args[2], args[3], args[4], args[5]);
             println!("line {:?}", lines[cnt+1]);
             cnt+= 2;

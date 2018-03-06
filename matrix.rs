@@ -1,6 +1,6 @@
 
 pub struct Matrix{
-    pub m : Vec<Vec<i64>>,
+    pub m : Vec<Vec<f64>>,
     rows : i64,
     cols : i64,
     pub lastcol : i64,
@@ -8,19 +8,19 @@ pub struct Matrix{
 
 pub fn make_translate(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
-    trans.m[0][0] = x as i64;
-    trans.m[1][1] = y as i64;
-    trans.m[2][2] = z as i64;
-    trans.m[3][3] = 1 as i64;
+    trans.m[0][0] = x;
+    trans.m[1][1] = y;
+    trans.m[2][2] = z;
+    trans.m[3][3] = 1.;
     trans
 }
 
 pub fn make_scale(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
-    trans.m[0][0] = x as i64;
-    trans.m[1][1] = y as i64;
-    trans.m[2][2] = z as i64;
-    trans.m[3][3] = 1;
+    trans.m[0][0] = x;
+    trans.m[1][1] = y;
+    trans.m[2][2] = z;
+    trans.m[3][3] = 1.;
     trans
 }
 
@@ -28,10 +28,10 @@ pub fn make_rotX(theta : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
     let t = theta.to_radians();
     ident(&mut trans);
-    trans.m[0][0] = t.cos() as i64;
-    trans.m[0][1] = -1 * t.sin() as i64;
-    trans.m[1][0] = t.sin() as i64;
-    trans.m[1][1] = t.cos() as i64;
+    trans.m[0][0] = t.cos();
+    trans.m[0][1] = -1. * t.sin();
+    trans.m[1][0] = t.sin();
+    trans.m[1][1] = t.cos();
     trans
 }
 
@@ -39,10 +39,10 @@ pub fn make_rotY(theta : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
     let t = theta.to_radians();
     ident(&mut trans);
-    trans.m[1][1] = t.cos() as i64;
-    trans.m[1][2] = -1 * t.sin() as i64;
-    trans.m[2][1] = t.sin() as i64;
-    trans.m[2][2] = t.cos() as i64;
+    trans.m[1][1] = t.cos();
+    trans.m[1][2] = -1. * t.sin();
+    trans.m[2][1] = t.sin();
+    trans.m[2][2] = t.cos();
     trans
 }
 
@@ -50,10 +50,10 @@ pub fn make_rotZ(theta : f64) -> Matrix{
     let mut trans: Matrix = new_matrix(4,4);
     let t = theta.to_radians();
     ident(&mut trans);
-    trans.m[0][0] = t.cos() as i64;
-    trans.m[0][3] = t.sin() as i64;
-    trans.m[2][0] = -1 * t.sin() as i64;
-    trans.m[2][2] = t.cos() as i64;
+    trans.m[0][0] = t.cos();
+    trans.m[0][3] = t.sin();
+    trans.m[2][0] = -1. * t.sin();
+    trans.m[2][2] = t.cos();
     trans
 }
 
@@ -77,10 +77,10 @@ pub fn ident(m : &mut Matrix){
     for m_col in 0..len {
         for m_row in 0..len {
             if m_col == m_row {
-                m.m[m_col][m_row] = 1;
+                m.m[m_col][m_row] = 1.;
             }
             else {
-                m.m[m_col][m_row] = 0;
+                m.m[m_col][m_row] = 0.;
             }
         }
     }
@@ -95,7 +95,7 @@ pub fn matrix_mult(a : &mut Matrix, b : &mut Matrix) -> Matrix{
 
     for i in 0..a_refs.len(){
         for j in 0..b_refs[0].len(){
-            let mut sum = 0;
+            let mut sum = 0.;
             for k in 0..a_refs.len() { // usually 3
                 sum += a_refs[i][k] * b_refs[k][j];
             }
@@ -106,13 +106,13 @@ pub fn matrix_mult(a : &mut Matrix, b : &mut Matrix) -> Matrix{
 }
 
 pub fn new_matrix(rows : i64, cols: i64) -> Matrix {
-    let mut tmp : Vec<Vec<i64>> = Vec::new();
+    let mut tmp : Vec<Vec<f64>> = Vec::new();
     for y in 0..cols {
         let tmp_a = y as usize;
-        let mut row : Vec<i64> = Vec::new();
+        let mut row : Vec<f64> = Vec::new();
         tmp.push(row);
         for _x in 0..rows {
-            &tmp[tmp_a].push(0);
+            &tmp[tmp_a].push(0.);
         }
     }
     Matrix {
