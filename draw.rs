@@ -3,15 +3,19 @@ use display;
 pub use matrix::Matrix;
 
 pub fn add_point( points : &mut Matrix, x : f64, y : f64, z : f64){
-    if points.lastcol >= points.m.len() as i64 {
-        points.m.push(vec![x, y, z, 1.]);
+    if points.lastcol >= points.m[0].len() as i64 {
+        //points.m.push(vec![x, y, z, 1.]);
+        points.m[0].push(x);
+        points.m[1].push(y);
+        points.m[2].push(z);
+        points.m[3].push(1.);
     }
     else{
         let ind = points.lastcol as usize;
-        points.m[ind][0] = x;
-        points.m[ind][1] = y;
-        points.m[ind][2] = z;
-        points.m[ind][3] = 1.;
+        points.m[0][ind] = x;
+        points.m[1][ind] = y;
+        points.m[2][ind] = z;
+        points.m[3][ind] = 1.;
     }
     points.lastcol += 1;
 }
@@ -23,12 +27,14 @@ pub fn add_edge( points : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f64, y
 
 pub fn draw_lines( points : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
     let m = &points.m;
-    let mut pastPoint : Vec<f64> = Vec::new();
-    for i in 0..m.len(){
+    let mut past_point_x : f64 = 0.;
+    let mut past_point_y : f64 = 0.;
+    for i in 0..m[0].len(){
         if i % 2 != 0{
-            draw_line(pastPoint[0] as i64, pastPoint[1] as i64, m[i][0] as i64, m[i][1] as i64, s, c);
+            draw_line(past_point_x as i64, past_point_y as i64, m[0][i] as i64, m[1][i] as i64, s, c);
         }
-        pastPoint = m[i].clone();
+        past_point_x = m[0][i].clone();
+        past_point_y = m[1][i].clone();
     }
 }
 

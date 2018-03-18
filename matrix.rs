@@ -8,34 +8,23 @@ pub struct Matrix{
 
 pub fn make_translate(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
-    trans.m[0][0] = x;
-    trans.m[1][1] = y;
-    trans.m[2][2] = z;
-    trans.m[3][3] = 1.;
+    ident(&mut trans);
+    trans.m[0][3] = x;
+    trans.m[1][3] = y;
+    trans.m[2][3] = z;
     trans
 }
 
 pub fn make_scale(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
+    ident(&mut trans);
     trans.m[0][0] = x;
     trans.m[1][1] = y;
     trans.m[2][2] = z;
-    trans.m[3][3] = 1.;
     trans
 }
 
 pub fn make_rotX(theta : f64) -> Matrix{
-    let mut trans : Matrix = new_matrix(4,4);
-    let t = theta.to_radians();
-    ident(&mut trans);
-    trans.m[0][0] = t.cos();
-    trans.m[0][1] = -1. * t.sin();
-    trans.m[1][0] = t.sin();
-    trans.m[1][1] = t.cos();
-    trans
-}
-
-pub fn make_rotY(theta : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
     let t = theta.to_radians();
     ident(&mut trans);
@@ -46,14 +35,25 @@ pub fn make_rotY(theta : f64) -> Matrix{
     trans
 }
 
+pub fn make_rotY(theta : f64) -> Matrix{
+    let mut trans : Matrix = new_matrix(4,4);
+    let t = theta.to_radians();
+    ident(&mut trans);
+    trans.m[0][0] = t.cos();
+    trans.m[2][0] = -1. * t.sin();
+    trans.m[0][2] = t.sin();
+    trans.m[2][2] = t.cos();
+    trans
+}
+
 pub fn make_rotZ(theta : f64) -> Matrix{
     let mut trans: Matrix = new_matrix(4,4);
     let t = theta.to_radians();
     ident(&mut trans);
     trans.m[0][0] = t.cos();
-    trans.m[0][3] = t.sin();
-    trans.m[2][0] = -1. * t.sin();
-    trans.m[2][2] = t.cos();
+    trans.m[0][1] = -1. * t.sin();
+    trans.m[1][0] = t.sin();
+    trans.m[1][1] = t.cos();
     trans
 }
 
@@ -84,34 +84,34 @@ pub fn ident(m : &mut Matrix){
             }
         }
     }
+    m.lastcol = m.cols;
 }
 
-pub fn matrix_mult(a : &mut Matrix, b : &mut Matrix) -> Matrix{
-
+pub fn matrix_mult(a : &mut Matrix, b : &mut Matrix){
     let a_refs = &a.m;
-    let b_refs = &b.m;
+    let b_refs = &mut b.m;
 
-    let mut c = new_matrix(a_refs.len() as i64, b_refs.len() as i64);
+    let mut tmp = new_matrix(4, 1);
 
-    for i in 0..a_refs.len(){
-        for j in 0..b_refs[0].len(){
-            let mut sum = 0.;
-            for k in 0..a_refs.len() { // usually 3
-                sum += a_refs[i][k] * b_refs[k][j];
-            }
-            c.m[i][j] = sum;
+
+    for j in 0..b.lastcol{
+        let j = j as usize;
+        for i in 0..b.rows{ let i = i as usize; tmp.m[i][0] = b_refs[i][j];}
+        for i in 0..b.rows{
+            let i = i as usize;
+            b_refs[i][j] = a_refs[i][0] * tmp.m[0][0] + a_refs[i][1] * tmp.m[1][0] + a_refs[i][2] * tmp.m[2][0] + a_refs[i][3] * tmp.m[3][0];
         }
     }
-    c
+
 }
 
 pub fn new_matrix(rows : i64, cols: i64) -> Matrix {
     let mut tmp : Vec<Vec<f64>> = Vec::new();
-    for y in 0..cols {
+    for y in 0..rows {
         let tmp_a = y as usize;
-        let mut row : Vec<f64> = Vec::new();
-        tmp.push(row);
-        for _x in 0..rows {
+        let mut col : Vec<f64> = Vec::new();
+        tmp.push(col);
+        for _x in 0..cols {
             &tmp[tmp_a].push(0.);
         }
     }
