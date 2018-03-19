@@ -6,6 +6,68 @@ pub struct Matrix{
     pub lastcol : i64,
 }
 
+pub fn make_bezier() -> Matrix {
+    let mut trans : Matrix = new_matrix(4,4);
+
+    trans.m[0][0] = -1.;
+    trans.m[0][1] = 3.;
+    trans.m[0][2] = -3.;
+    trans.m[0][3] = 1.;
+    trans.m[1][0] = 3.;
+    trans.m[1][1] = -6.;
+    trans.m[1][2] = 3.;
+    trans.m[1][3] = 0.;
+    trans.m[2][0] = -3.;
+    trans.m[2][1] = 3.;
+    trans.m[2][2] = 0.;
+    trans.m[2][3] = 0.;
+    trans.m[3][0] = 1.;
+    trans.m[3][1] = 0.;
+    trans.m[3][2] = 0.;
+    trans.m[3][3] = 0.;
+    trans.lastcol = 4;
+    trans
+}
+
+pub fn make_hermite() -> Matrix {
+    let mut trans : Matrix = new_matrix(4,4);
+
+    trans.m[0][0] = 2.;
+    trans.m[0][1] = -2.;
+    trans.m[0][2] = 1.;
+    trans.m[0][3] = 1.;
+    trans.m[1][0] = -3.;
+    trans.m[1][1] = 3.;
+    trans.m[1][2] = -2.;
+    trans.m[1][3] = -1.;
+    trans.m[2][0] = 0.;
+    trans.m[2][1] = 0.;
+    trans.m[2][2] = 1.;
+    trans.m[2][3] = 0.;
+    trans.m[3][0] = 1.;
+    trans.m[3][1] = 0.;
+    trans.m[3][2] = 0.;
+    trans.m[3][3] = 0.;
+    trans.lastcol = 4;
+    trans
+}
+
+pub fn generate_curve_coefs(p1 : f64, p2 : f64, p3 : f64, p4 : f64, type_curve : i64) -> Matrix {
+    let mut t : Matrix = new_matrix(4, 1);
+    t.m[0][0] = p1;
+    t.m[1][0] = p2;
+    t.m[2][0] = p3;
+    t.m[3][0] = p4;
+    t.lastcol = 1;
+    if type_curve == 0 {
+        matrix_mult(&mut make_hermite(), &mut t);
+    } else {
+        matrix_mult(&mut make_bezier(), &mut t);
+    }
+    t
+}
+
+
 pub fn make_translate(x : f64, y : f64, z : f64) -> Matrix{
     let mut trans : Matrix = new_matrix(4,4);
     ident(&mut trans);

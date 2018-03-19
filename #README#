@@ -5,7 +5,4 @@ Compile with make. It uses rustc, instead of cargo now, for building.
 Includes:
 * Scaling
 * Translations
-* Rotations
-* Bezier Curves
-* Hermite Curves
-* Circle Drawing
+

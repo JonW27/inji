@@ -6,6 +6,10 @@ pub use matrix::*;
 pub use draw::*;
 pub use display::{save_ppm, clear_screen, display};
 
+const STEP:f64 = 0.01;
+const HERMITE:i64 = 0;
+const BEZIER:i64 = 1;
+
 pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64; 3]>>){
 
     let f = File::open(f_name);
@@ -47,15 +51,33 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
         } else if line == "rotate"{
             let args = lines[cnt+1].split(" ").collect::<Vec<&str>>();
             if args[0] == "x"{
-                /*t = */matrix_mult(&mut make_rotX(args[1].parse::<f64>().unwrap()), &mut t);
+                println!("\nRotating Frame about x at {} degrees", args[1]);
+                matrix_mult(&mut make_rotX(args[1].parse::<f64>().unwrap()), &mut t);
             } else if args[0] == "y"{
-                /*t = */matrix_mult(&mut make_rotY(args[1].parse::<f64>().unwrap()), &mut t);
+                println!("\nRotating Frame about y at {} degrees", args[1]);
+                matrix_mult(&mut make_rotY(args[1].parse::<f64>().unwrap()), &mut t);
             } else if args[0] == "z"{
-                /*t = */matrix_mult(&mut make_rotZ(args[1].parse::<f64>().unwrap()), &mut t);
+                println!("\nRotating Frame about z at {} degrees", args[1]);
+                matrix_mult(&mut make_rotZ(args[1].parse::<f64>().unwrap()), &mut t);
             } else {
                 println!("Could not rotate due to no axis being specified");
             }
             println!("rotate {}", lines[cnt+1]);
+            cnt += 2;
+        } else if line == "circle"{
+            let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
+            println!("\nDrawing circle {} {} {} {}", args[0], args[1], args[2], args[3]);
+            add_circle(&mut e, args[0], args[1], args[2], args[3], STEP);
+            cnt += 2;
+        } else if line == "hermite"{
+            let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
+            println!("\nDrawing hermite curve {} {} {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+            add_curve(&mut e, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], STEP, HERMITE);
+            cnt += 2;
+        } else if line == "bezier"{
+            let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
+            println!("\nDrawing bezier curve {} {} {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+            add_curve(&mut e, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], STEP, BEZIER);
             cnt += 2;
         } else if line == "apply"{
             println!("\nTransformation matrix");
