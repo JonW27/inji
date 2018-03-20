@@ -64,7 +64,7 @@ pub fn add_torus(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r1 : f64, r2
 
 pub fn generate_torus(cx :f64, cy : f64, cz : f64, r1 : f64, r2 : f64, step : i64) -> Matrix {
     
-    let mut sphere : Matrix = new_matrix(4, step);
+    let mut torus : Matrix = new_matrix(4, step);
     let stp = step as f64;
 
     for i in 0..step { 
@@ -74,10 +74,10 @@ pub fn generate_torus(cx :f64, cy : f64, cz : f64, r1 : f64, r2 : f64, step : i6
             let x = phi.cos()*(r2*theta.cos()+r1)+cx;
             let y = r2*theta.sin()+cy;
             let z = (r2*theta.cos()+r1)*phi.sin()+cz;
-            add_edge(&mut sphere, x, y, z, x+1., y, z);
+            add_edge(&mut torus, x, y, z, x+1., y, z);
         }
     }
-    sphere
+    torus
 }    
 
 
