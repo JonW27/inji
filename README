@@ -9,3 +9,6 @@ Includes:
 * Bezier Curves
 * Hermite Curves
 * Circle Drawing
+* 3D Boxes
+* 3D Spheres (currently minor vec flaw in fn add_sphere)
+* 3D Toruses (also affected by minor vec flaw)

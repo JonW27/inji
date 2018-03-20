@@ -1,8 +1,0 @@
-Transformations
-
-Compile with make. It uses rustc, instead of cargo now, for building.
-
-Includes:
-* Scaling
-* Translations
-
