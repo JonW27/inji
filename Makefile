@@ -1,3 +1,2 @@
 all:
-	rustc main.rs
-	./main
+	cargo run

@@ -25,27 +25,26 @@ pub fn add_box( edges : &mut Matrix, x : f64, y :f64, z : f64, width: f64, heigh
 pub fn add_sphere(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r : f64, step : i64){
     
     let sphere : Matrix = generate_sphere(cx, cy, cz, r, step);
-    let mut k = 0;
-    while k < sphere.lastcol-1{
-        let i = k as usize;
-        add_edge(edges, sphere.m[i][0], sphere.m[i][1], sphere.m[i][2], sphere.m[i+1][0], sphere.m[i+1][1], sphere.m[i+1][2]);
-        k += 2;
+    for i in 0..step{
+        for j in 0..step{
+            let k = (i * step + j) as usize;
+            add_edge(edges, sphere.m[0][k], sphere.m[1][k], sphere.m[2][k], sphere.m[0][k]+1., sphere.m[1][k], sphere.m[2][k]);
+        }
     }
 }
 
 pub fn generate_sphere(cx :f64, cy : f64, cz : f64, r : f64, step : i64) -> Matrix {
     
     let mut sphere : Matrix = new_matrix(4, step);
-    let stp = step as f64;
 
     for i in 0..step { 
-        let theta = (i as f64 / stp).to_radians();
+        let phi = i as f64 / step as f64;
         for j in 0..step {
-            let phi = (j as f64 / stp).to_radians();
-            let x = r*theta.cos()+cx;
-            let y = r*theta.sin()*phi.cos()+cy;
-            let z = r*theta.sin()*phi.sin()+cz;
-            add_edge(&mut sphere, x, y, z, x+1., y, z);
+            let theta = j as f64 / step as f64;
+            let x = r*(theta * PI).cos()+cx;
+            let y = r*(theta * PI).sin()*(phi * 2. * PI).cos()+cy;
+            let z = r*(theta * PI).sin()*(phi * 2. * PI).sin()+cz;
+            add_point(&mut sphere, x, y, z);
         }
     }
     sphere
@@ -53,11 +52,11 @@ pub fn generate_sphere(cx :f64, cy : f64, cz : f64, r : f64, step : i64) -> Matr
 
 pub fn add_torus(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r1 : f64, r2 : f64, step : i64){
     let torus : Matrix = generate_torus(cx, cy, cz, r1, r2, step);
-    let mut k = 0;
-    while k < torus.lastcol{
-        let i = k as usize;
-        add_edge(edges, torus.m[i][0], torus.m[i][1], torus.m[i][2], torus.m[i+1][0], torus.m[i+1][1], torus.m[i+1][2]);
-        k += 2;
+    for i in 0..step{
+        for j in 0..step{
+            let k = (i * step + j) as usize;
+            add_edge(edges, torus.m[0][k], torus.m[1][k], torus.m[2][k], torus.m[0][k]+1., torus.m[1][k], torus.m[2][k]);
+        }
     }
     // trust the process, although this fxn looks exactly the same as add_sphere, it will be different in the upcoming stage– i hope
 }
@@ -65,12 +64,11 @@ pub fn add_torus(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r1 : f64, r2
 pub fn generate_torus(cx :f64, cy : f64, cz : f64, r1 : f64, r2 : f64, step : i64) -> Matrix {
     
     let mut torus : Matrix = new_matrix(4, step);
-    let stp = step as f64;
 
     for i in 0..step { 
-        let theta = (i as f64 / stp).to_radians();
+        let theta = i as f64 / step as f64 * 2. * PI;
         for j in 0..step {
-            let phi = (j as f64 / stp).to_radians();
+            let phi = j as f64 / step as f64 * 2. * PI;
             let x = phi.cos()*(r2*theta.cos()+r1)+cx;
             let y = r2*theta.sin()+cy;
             let z = (r2*theta.cos()+r1)*phi.sin()+cz;

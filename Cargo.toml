@@ -1,0 +1,7 @@
+[package]
+name = "inji"
+version = "0.1.0"
+authors = ["Jonathan Wong <jcwong@protonmail.com>"]
+
+[dependencies]
+clap = "~2.31.2"

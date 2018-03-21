@@ -1,6 +1,6 @@
-Transformations
+inji
 
-Compile with make. It uses rustc, instead of cargo now, for building.
+Compile with make. It uses cargo now.
 
 Includes:
 * Scaling
@@ -10,5 +10,5 @@ Includes:
 * Hermite Curves
 * Circle Drawing
 * 3D Boxes
-* 3D Spheres (currently minor vec flaw in fn add_sphere)
-* 3D Toruses (also affected by minor vec flaw)
+* 3D Spheres
+* 3D Toruses

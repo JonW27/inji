@@ -98,14 +98,15 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             println!("\nDrawing torus {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);
             add_torus(&mut e, args[0], args[1], args[2], args[3], args[4], STEP2); //   
+            cnt += 2;
         } else if line == "apply"{
-            println!("\nTransformation matrix");
-            print_matrix(&t);
-            println!("\nEdge matrix");
-            print_matrix(&e);
+            //println!("\nTransformation matrix");
+            //print_matrix(&t);
+            //println!("\nEdge matrix");
+            //print_matrix(&e);
             matrix_mult(&mut t, &mut e);
-            println!("\nResultant matrix");
-            print_matrix(&e);
+            //println!("\nResultant matrix");
+            //print_matrix(&e);
             println!("apply");
             cnt += 1;
         } else if line == "display"{
