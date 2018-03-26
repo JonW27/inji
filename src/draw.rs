@@ -8,11 +8,13 @@ const HERMITE:i64 = 0;
 const BEZIER:i64 = 1;
 
 pub fn add_polygon( polygons : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f64, y1 : f64, z1 : f64, x2 : f64, y2 : f64, z2 : f64){
-
+    add_point(polygons, x0, y0, z0);
+    add_point(polygons, x1, y1, z1);
+    add_point(polygons, x2, y2, z2);
 }
 
 pub fn draw_polygons( polygons : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
-
+    draw_line(polygons, );
 }    
 
 pub fn add_box( edges : &mut Matrix, x : f64, y :f64, z : f64, width: f64, height: f64, depth: f64){
