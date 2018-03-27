@@ -14,22 +14,28 @@ pub fn add_polygon( polygons : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f
 }
 
 pub fn draw_polygons( polygons : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
-    draw_line(polygons, );
+    let (l, mut i) = (polygons.m[0].len(), 0);
+    while i < l {
+        draw_line(polygons.m[0][i] as f64, polygons.m[1][i] as f64, polygons.m[0][i+1] as f64, polygons.m[1][i+1] as f64, s, c);
+        draw_line(polygons.m[0][i] as f64, polygons.m[1][i] as f64, polygons.m[0][i+2] as f64, polygons.m[1][i+2] as f64, s, c);
+        draw_line(polygons.m[0][i+2] as f64, polygons.m[1][i+2] as f64, polygons.m[0][i+1] as f64, polygons.m[1][i+1] as f64, s, c);
+        i += 3;
+    }
 }    
 
 pub fn add_box( edges : &mut Matrix, x : f64, y :f64, z : f64, width: f64, height: f64, depth: f64){
-    add_edge(edges, x, y, z, x+width, y, z);
-    add_edge(edges, x, y, z, x, y-height, z);
-    add_edge(edges, x, y, z, x, y, z-depth);
-    add_edge(edges, x+width, y, z, x+width, y-height, z);
-    add_edge(edges, x+width, y, z, x+width, y, z-depth);
-    add_edge(edges, x, y-height, z, x+width, y-height, z);
-    add_edge(edges, x, y-height, z, x, y-height, z-depth);
-    add_edge(edges, x+width, y-height, z, x+width, y-height, z-depth);
-    add_edge(edges, x, y, z-depth, x+width, y, z-depth);
-    add_edge(edges, x, y, z-depth, x, y-height, z-depth);
-    add_edge(edges, x+width, y, z-depth, x+width, y-height, z-depth);
-    add_edge(edges, x, y-height, z-depth, x+width, y-height, z-depth);
+    add_polygon(edges, x+width, y, z, x, y, z, x, y-height, z);
+    add_polygon(edges, x+width, y-height, z, x+width, y, z, x, y-height, z);
+    add_polygon(edges, x+width, y-height, z, x, y-height, z-depth, x, y-height, z);
+    add_polygon(edges, x+width, y-height, z, x+width, y-height, z-depth, x, y-height, z-depth);
+    add_polygon(edges, x, y-height, z-depth, x, y, z, x, y-height, z);
+    add_polygon(edges, x, y-height, z-depth, x, y, z-depth, x, y, z);
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z, x+width, y-height, z);
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x+width, y, z);
+    add_polygon(edges, x+width, y, z, x, y, z-depth, x, y, z);
+    add_polygon(edges, x+width, y, z, x+width, y, z-depth, x, y, z-depth);
+    add_polygon(edges, x+width, y-height, z-depth, x, y, z-depth, x, y-height, z-depth);
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x, y, z-depth);
 }
 
 pub fn add_sphere(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r : f64, step : i64){
