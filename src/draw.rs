@@ -76,7 +76,7 @@ pub fn generate_sphere(cx :f64, cy : f64, cz : f64, r : f64, step : i64) -> Matr
 
     for i in 0..step { 
         let phi = i as f64 / step as f64;
-        for j in 0..step {
+        for j in 0..step+1 {
             let theta = j as f64 / step as f64;
             let x = r*(theta * PI).cos()+cx;
             let y = r*(theta * PI).sin()*(phi * 2. * PI).cos()+cy;
@@ -91,8 +91,16 @@ pub fn add_torus(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r1 : f64, r2
     let torus : Matrix = generate_torus(cx, cy, cz, r1, r2, step);
     for i in 0..step{
         for j in 0..step{
-            let k = (i * step + j) as usize;
-            add_edge(edges, torus.m[0][k], torus.m[1][k], torus.m[2][k], torus.m[0][k]+1., torus.m[1][k], torus.m[2][k]);
+             let t0 = i * (step+1) + j;
+            let t1 = t0 + 1;
+            let t2 = (t1 + step+1) % ((step + 1) * step);
+            let t3 = (t0 + step+1) % ((step + 1) * step);
+            let p0 = t0 as usize;
+            let p1 = t1 as usize;
+            let p2 = t2 as usize;
+            let p3 = t3 as usize;
+            add_polygon(edges, torus.m[0][p0], torus.m[1][p0], torus.m[2][p0], torus.m[0][p2], torus.m[1][p2], torus.m[2][p2], torus.m[0][p1], torus.m[1][p1], torus.m[2][p1]); // flipped due to oppo directions from sphere (front instead of back)
+            add_polygon(edges, torus.m[0][p0], torus.m[1][p0], torus.m[2][p0], torus.m[0][p3], torus.m[1][p3], torus.m[2][p3], torus.m[0][p2], torus.m[1][p2], torus.m[2][p2]); // flipped due to oppo directions from sphere (front instead of back)
         }
     }
     // trust the process, although this fxn looks exactly the same as add_sphere, it will be different in the upcoming stage– i hope

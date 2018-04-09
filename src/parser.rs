@@ -7,7 +7,7 @@ pub use draw::*;
 pub use display::{save_ppm, clear_screen, display};
 
 const STEP:f64 = 0.01;
-const STEP2:i64 = 50;
+const STEP2:i64 = 10;
 const HERMITE:i64 = 0;
 const BEZIER:i64 = 1;
 
@@ -98,7 +98,7 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut p : Matrix, mut 
         } else if line == "torus"{
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             println!("\nDrawing torus {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);
-            add_torus(&mut e, args[0], args[1], args[2], args[3], args[4], STEP2); //   
+            add_torus(&mut p, args[0], args[1], args[2], args[3], args[4], STEP2); //   
             cnt += 2;
         } else if line == "apply"{
             //println!("\nTransformation matrix");
