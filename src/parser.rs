@@ -7,7 +7,7 @@ pub use draw::*;
 pub use display::{save_ppm, clear_screen, display};
 
 const STEP:f64 = 0.01;
-const STEP2:i64 = 10;
+const STEP2:i64 = 50;
 const HERMITE:i64 = 0;
 const BEZIER:i64 = 1;
 

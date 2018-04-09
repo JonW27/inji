@@ -112,12 +112,12 @@ pub fn generate_torus(cx :f64, cy : f64, cz : f64, r1 : f64, r2 : f64, step : i6
 
     for i in 0..step { 
         let theta = i as f64 / step as f64 * 2. * PI;
-        for j in 0..step {
+        for j in 0..step+1 {
             let phi = j as f64 / step as f64 * 2. * PI;
             let x = phi.cos()*(r2*theta.cos()+r1)+cx;
             let y = r2*theta.sin()+cy;
             let z = (r2*theta.cos()+r1)*phi.sin()+cz;
-            add_edge(&mut torus, x, y, z, x+1., y, z);
+            add_point(&mut torus, x, y, z,);
         }
     }
     torus
