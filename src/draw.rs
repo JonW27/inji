@@ -13,29 +13,42 @@ pub fn add_polygon( polygons : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f
     add_point(polygons, x2, y2, z2);
 }
 
-pub fn draw_polygons( polygons : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
-    let (l, mut i) = (polygons.m[0].len(), 0);
+pub fn draw_polygons( p : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
+    let (l, mut i) = (p.m[0].len(), 0);
     while i < l {
-        draw_line(polygons.m[0][i] as f64, polygons.m[1][i] as f64, polygons.m[0][i+1] as f64, polygons.m[1][i+1] as f64, s, c);
-        draw_line(polygons.m[0][i] as f64, polygons.m[1][i] as f64, polygons.m[0][i+2] as f64, polygons.m[1][i+2] as f64, s, c);
-        draw_line(polygons.m[0][i+2] as f64, polygons.m[1][i+2] as f64, polygons.m[0][i+1] as f64, polygons.m[1][i+1] as f64, s, c);
+        // x0, y0, x1, y1, s, c
+        draw_line(p.m[0][i] as i64, p.m[1][i] as i64, p.m[0][i+1] as i64, p.m[1][i+1] as i64, s, c);
+        draw_line(p.m[0][i+1] as i64, p.m[1][i+1] as i64, p.m[0][i+2] as i64, p.m[1][i+2] as i64, s, c);
+        draw_line(p.m[0][i+2] as i64, p.m[1][i+2] as i64, p.m[0][i] as i64, p.m[1][i] as i64, s, c);
         i += 3;
     }
 }    
 
 pub fn add_box( edges : &mut Matrix, x : f64, y :f64, z : f64, width: f64, height: f64, depth: f64){
-    add_polygon(edges, x+width, y, z, x, y, z, x, y-height, z);
-    add_polygon(edges, x+width, y-height, z, x+width, y, z, x, y-height, z);
-    add_polygon(edges, x+width, y-height, z, x, y-height, z-depth, x, y-height, z);
-    add_polygon(edges, x+width, y-height, z, x+width, y-height, z-depth, x, y-height, z-depth);
-    add_polygon(edges, x, y-height, z-depth, x, y, z, x, y-height, z);
-    add_polygon(edges, x, y-height, z-depth, x, y, z-depth, x, y, z);
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z, x+width, y-height, z);
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x+width, y, z);
+    // front face
+    add_polygon(edges, x+width, y-height, z, x, y, z, x, y-height, z);
+    add_polygon(edges, x+width, y-height, z, x+width, y, z, x, y, z);
+
+    // back face
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x, y-height, z-depth);
+    add_polygon(edges, x+width, y, z-depth, x, y, z-depth, x, y-height, z-depth);
+
+    // top face
     add_polygon(edges, x+width, y, z, x, y, z-depth, x, y, z);
     add_polygon(edges, x+width, y, z, x+width, y, z-depth, x, y, z-depth);
-    add_polygon(edges, x+width, y-height, z-depth, x, y, z-depth, x, y-height, z-depth);
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x, y, z-depth);
+
+    // bottom face
+    add_polygon(edges, x+width, y-height, z, x+width, y-height, z-depth, x, y-height, z);
+    add_polygon(edges, x, y-height, z-depth, x+width, y-height, z-depth, x, y-height, z);
+    
+    // left face
+    add_polygon(edges, x, y, z-depth, x, y, z, x, y-height, z);
+    add_polygon(edges, x, y, z-depth, x, y, z-depth, x, y, z);
+    
+    // right face
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z, x+width, y-height, z);
+    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x+width, y, z);
+    
 }
 
 pub fn add_sphere(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r : f64, step : i64){
@@ -43,8 +56,16 @@ pub fn add_sphere(edges : &mut Matrix, cx : f64, cy : f64, cz : f64, r : f64, st
     let sphere : Matrix = generate_sphere(cx, cy, cz, r, step);
     for i in 0..step{
         for j in 0..step{
-            let k = (i * step + j) as usize;
-            add_edge(edges, sphere.m[0][k], sphere.m[1][k], sphere.m[2][k], sphere.m[0][k]+1., sphere.m[1][k], sphere.m[2][k]);
+            let t0 = i * (step+1) + j;
+            let t1 = t0 + 1;
+            let t2 = (t1 + step+1) % ((step + 1) * step);
+            let t3 = (t0 + step+1) % ((step + 1) * step);
+            let p0 = t0 as usize;
+            let p1 = t1 as usize;
+            let p2 = t2 as usize;
+            let p3 = t3 as usize;
+            add_polygon(edges, sphere.m[0][p0], sphere.m[1][p0], sphere.m[2][p0], sphere.m[0][p1], sphere.m[1][p1], sphere.m[2][p1], sphere.m[0][p2], sphere.m[1][p2], sphere.m[2][p2]);
+            add_polygon(edges, sphere.m[0][p0], sphere.m[1][p0], sphere.m[2][p0], sphere.m[0][p2], sphere.m[1][p2], sphere.m[2][p2], sphere.m[0][p3], sphere.m[1][p3], sphere.m[2][p3]);
         }
     }
 }

@@ -11,7 +11,7 @@ const STEP2:i64 = 50;
 const HERMITE:i64 = 0;
 const BEZIER:i64 = 1;
 
-pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64; 3]>>){
+pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut p : Matrix, mut s : Vec<Vec<[i64; 3]>>){
 
     let f = File::open(f_name);
 
@@ -41,6 +41,7 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
             cnt+= 1;
         } else if line == "clear"{
             e.lastcol = 0;
+            p.lastcol = 0;
             println!("clear edge matrix");
             cnt+= 1;
         } else if line == "scale"{
@@ -87,12 +88,12 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
         } else if line == "box"{
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             println!("\nDrawing box {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5]);
-            add_box(&mut e, args[0], args[1], args[2], args[3], args[4], args[5]);
+            add_box(&mut p, args[0], args[1], args[2], args[3], args[4], args[5]);
             cnt += 2;
         } else if line == "sphere"{
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             println!("\nDrawing sphere {} {} {} {}", args[0], args[1], args[2], args[3]);
-            add_sphere(&mut e, args[0], args[1], args[2], args[3], STEP2);
+            add_sphere(&mut p, args[0], args[1], args[2], args[3], STEP2);
             cnt += 2;
         } else if line == "torus"{
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
@@ -105,6 +106,7 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
             //println!("\nEdge matrix");
             //print_matrix(&e);
             matrix_mult(&mut t, &mut e);
+            matrix_mult(&mut t, &mut p);
             //println!("\nResultant matrix");
             //print_matrix(&e);
             println!("apply");
@@ -112,11 +114,13 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut s : Vec<Vec<[i64
         } else if line == "display"{
             clear_screen(&mut s);
             draw_lines(&mut e, &mut s, [0, 0, 0]);
+            draw_polygons(&mut p, &mut s, [0, 0, 0]);
             display(&mut s);
             cnt += 1;
         } else if line == "save" {
             clear_screen(&mut s);
             draw_lines(&mut e, &mut s, [0, 0, 0]);
+            draw_polygons(&mut p, &mut s, [0, 0, 0]);
             save_ppm(&mut s, lines[cnt+1].to_string());
             println!("save {:?}", lines[cnt+1]);
             cnt += 2;
