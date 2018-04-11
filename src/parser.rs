@@ -25,6 +25,10 @@ pub fn parse(f_name : &str, mut t : Matrix, mut e : Matrix, mut p : Matrix, mut 
 
     println!("<================ Parsing File {} ================>", f_name);
 
+    if IS_BACKFACE_CULLED {
+        println!("The option BACKFACE_CULLED is ENABLED.");
+    }
+
     let reader = BufReader::new(f);
 
     let lines : Vec<String> = reader.lines().map(|l| l.unwrap()).collect();

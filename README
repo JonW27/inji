@@ -12,5 +12,7 @@ Includes:
 * 3D Boxes
 * 3D Spheres
 * 3D Toruses
+* Polygonal Surfaces (triangles)
+* Broken backface-culling
 
-I test-ran it on homer. It worked perfectly fine.
+~~I test-ran it on homer. It worked perfectly fine.~~
