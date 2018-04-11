@@ -13,41 +13,69 @@ pub fn add_polygon( polygons : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f
     add_point(polygons, x2, y2, z2);
 }
 
-pub fn draw_polygons( p : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3]){
+pub fn draw_polygons( p : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3], to_backface_cull : bool){
     let (l, mut i) = (p.m[0].len(), 0);
     while i < l {
         // x0, y0, x1, y1, s, c
-        draw_line(p.m[0][i] as i64, p.m[1][i] as i64, p.m[0][i+1] as i64, p.m[1][i+1] as i64, s, c);
-        draw_line(p.m[0][i+1] as i64, p.m[1][i+1] as i64, p.m[0][i+2] as i64, p.m[1][i+2] as i64, s, c);
-        draw_line(p.m[0][i+2] as i64, p.m[1][i+2] as i64, p.m[0][i] as i64, p.m[1][i] as i64, s, c);
+        let n : [f64; 3] = get_surface_normal(p, i);
+        if n[2] > 0. || !to_backface_cull {
+            draw_line(p.m[0][i] as i64, p.m[1][i] as i64, p.m[0][i+1] as i64, p.m[1][i+1] as i64, s, c);
+            draw_line(p.m[0][i+1] as i64, p.m[1][i+1] as i64, p.m[0][i+2] as i64, p.m[1][i+2] as i64, s, c);
+            draw_line(p.m[0][i+2] as i64, p.m[1][i+2] as i64, p.m[0][i] as i64, p.m[1][i] as i64, s, c);
+        }
         i += 3;
     }
-}    
+}
+
+pub fn get_surface_normal(polygons : &mut Matrix, point_index : usize) -> [f64; 3]{
+    let (mut a, mut b, mut n) = ([0., 0., 0.], [0., 0., 0.], [0., 0., 0.]);
+
+    // get the triangle sides
+    // side a
+    a[0] = polygons.m[0][point_index+1] - polygons.m[0][point_index]; // individual vector component x of side a
+    a[1] = polygons.m[1][point_index+1] - polygons.m[1][point_index];
+    a[1] = polygons.m[2][point_index+1] - polygons.m[2][point_index];
+
+    // side b
+    b[0] = polygons.m[0][point_index+2] - polygons.m[0][point_index];
+    b[1] = polygons.m[1][point_index+2] - polygons.m[1][point_index];
+    b[1] = polygons.m[2][point_index+2] - polygons.m[2][point_index];
+    
+    /* multiply out cross product
+            A * B = < AyBz - AzBx, AzBx - AxBz, AxBy - AyBx>
+    */
+
+    n[0] = a[1]*b[2] - a[2]*b[0]; // attempt b[1] for second param if doesn't work
+    n[1] = a[2]*b[0] - a[0]*b[2];
+    n[2] = a[0]*b[1] - a[1]*b[0];
+
+    n
+} 
 
 pub fn add_box( edges : &mut Matrix, x : f64, y :f64, z : f64, width: f64, height: f64, depth: f64){
     // front face
-    add_polygon(edges, x+width, y-height, z, x, y, z, x, y-height, z);
-    add_polygon(edges, x+width, y-height, z, x+width, y, z, x, y, z);
+    add_polygon(edges, x, y, z, x, y-height, z, x+width, y-height, z);
+    add_polygon(edges, x, y, z, x+width, y-height, z, x+width, y, z);
 
     // back face
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x, y-height, z-depth);
-    add_polygon(edges, x+width, y, z-depth, x, y, z-depth, x, y-height, z-depth);
+    add_polygon(edges, x+width, y, z-depth, x+width, y-height, z-depth, x, y-height, z-depth);
+    add_polygon(edges, x+width, y, z-depth, x, y-height, z-depth, x, y, z-depth);
 
     // top face
-    add_polygon(edges, x+width, y, z, x, y, z-depth, x, y, z);
-    add_polygon(edges, x+width, y, z, x+width, y, z-depth, x, y, z-depth);
+    add_polygon(edges, x, y, z-depth, x, y, z, x+width, y, z);
+    add_polygon(edges, x, y, z-depth, x+width, y, z, x+width, y, z-depth);
 
     // bottom face
-    add_polygon(edges, x+width, y-height, z, x+width, y-height, z-depth, x, y-height, z);
-    add_polygon(edges, x, y-height, z-depth, x+width, y-height, z-depth, x, y-height, z);
+    add_polygon(edges, x, y-height, z, x+width, y-height, z-depth, x+width, y-height, z);
+    add_polygon(edges, x, y-height, z, x, y-height, z-depth, x+width, y-height, z-depth);
     
     // left face
-    add_polygon(edges, x, y, z-depth, x, y, z, x, y-height, z);
-    add_polygon(edges, x, y, z-depth, x, y, z-depth, x, y, z);
+    add_polygon(edges, x, y, z-depth, x, y-height, z, x, y, z);
+    add_polygon(edges, x, y, z-depth, x, y-height, z-depth, x, y-height, z);
     
     // right face
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z, x+width, y-height, z);
-    add_polygon(edges, x+width, y-height, z-depth, x+width, y, z-depth, x+width, y, z);
+    add_polygon(edges, x+width, y, z, x+width, y-height, z, x+width, y-height, z-depth);
+    add_polygon(edges, x+width, y, z, x+width, y-height, z-depth, x+width, y, z-depth);
     
 }
 
