@@ -14,17 +14,20 @@ pub fn add_polygon(polygons : &mut Matrix, x0 : f64, y0 : f64, z0 : f64, x1 : f6
 }
 
 pub fn draw_polygons(p : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, c : [i64; 3], to_backface_cull : bool){
-    let (l, mut i) = (p.lastcol - 2, 0);
-    let l = l as usize;
-    while i < l {
+    if p.lastcol < 3 {
+        println!("Cannot draw a triangle-based polygon if three points are not supplied.");
+    }
+    let (l, mut k) = (p.lastcol - 2, 0);
+    while k < l {
         // x0, y0, x1, y1, s, c
+        let i = k as usize;
         let n : [f64; 3] = get_surface_normal(p, i);
         if n[2] > 0. || !to_backface_cull {
             draw_line(p.m[0][i] as i64, p.m[1][i] as i64, p.m[0][i+1] as i64, p.m[1][i+1] as i64, s, c);
             draw_line(p.m[0][i+1] as i64, p.m[1][i+1] as i64, p.m[0][i+2] as i64, p.m[1][i+2] as i64, s, c);
             draw_line(p.m[0][i+2] as i64, p.m[1][i+2] as i64, p.m[0][i] as i64, p.m[1][i] as i64, s, c);
         }
-        i += 3;
+        k += 3;
     }
 }
 
@@ -35,18 +38,18 @@ pub fn get_surface_normal(polygons : &mut Matrix, point_index : usize) -> [f64; 
     // side a
     a[0] = polygons.m[0][point_index+1] - polygons.m[0][point_index]; // individual vector component x of side a
     a[1] = polygons.m[1][point_index+1] - polygons.m[1][point_index];
-    a[1] = polygons.m[2][point_index+1] - polygons.m[2][point_index];
+    a[2] = polygons.m[2][point_index+1] - polygons.m[2][point_index];
 
     // side b
     b[0] = polygons.m[0][point_index+2] - polygons.m[0][point_index];
     b[1] = polygons.m[1][point_index+2] - polygons.m[1][point_index];
-    b[1] = polygons.m[2][point_index+2] - polygons.m[2][point_index];
+    b[2] = polygons.m[2][point_index+2] - polygons.m[2][point_index];
     
     /* multiply out cross product
             A * B = < AyBz - AzBx, AzBx - AxBz, AxBy - AyBx>
     */
 
-    n[0] = a[1]*b[2] - a[2]*b[0]; // attempt b[1] for second param if doesn't work
+    n[0] = a[1]*b[2] - a[2]*b[1];
     n[1] = a[2]*b[0] - a[0]*b[2];
     n[2] = a[0]*b[1] - a[1]*b[0];
 
