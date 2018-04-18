@@ -13,6 +13,7 @@ Includes:
 * 3D Spheres
 * 3D Toruses
 * Polygonal Surfaces (triangles)
-* Broken backface culling 😢
+* ~~Broken~~ backface culling
+* Broken RCS
 
 ~~I test-ran it on homer. It worked perfectly fine.~~

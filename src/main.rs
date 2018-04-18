@@ -27,11 +27,9 @@ fn main() {
     }
 
     let screen = display::new_screen(500, 500);
-    let e = matrix::new_matrix(4, 4); // edge matrix
-    let p = matrix::new_matrix(4, 4); // polygonal matrix
-    let t = matrix::new_matrix(4, 4);
+    let stack : Vec<matrix::Matrix> = Vec::new();
 
-    parser::parse("cmd.dw", t, e, p, screen);
+    parser::parse("cmd.dw", stack, screen);
     // display(screen);
     // save_extension(screen, 'img.png');
 }

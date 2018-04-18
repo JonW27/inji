@@ -1,4 +1,4 @@
-
+#[derive(Clone)]
 pub struct Matrix{
     pub m : Vec<Vec<f64>>,
     rows : i64,
