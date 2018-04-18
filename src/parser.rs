@@ -39,15 +39,11 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         let line = &lines[cnt];
         let mut tmp = new_matrix(4, 4);
         if line == "push"{
-            if stack.len() > 0 {
-                let stackc = stack.clone();
-                let last : usize = stackc.len()-1;  
-                stack.push(stackc[last].clone());
-                println!("push");
+            match stack.clone().last() {
+                Some(x) => { stack.push(x.clone()); print_matrix(&mut x.clone())},
+                None => println!("there's literally no top of the stack"),
             }
-            else {
-                println!("The top of the stack is empty. There's literally nothing to push.");
-            }
+            println!("push");
             cnt+= 1;
         }
         else if line == "pop"{
@@ -65,13 +61,17 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         } else if line == "scale"{
             let last : usize = stack.len()-1;
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
-            matrix_mult(&mut stack[last], &mut make_scale(args[0], args[1], args[2]));
+            let tmp = &mut make_scale(args[0], args[1], args[2]);
+            matrix_mult(&mut stack[last], tmp);
+            stack[last] = tmp.clone();
             println!("scale {}", lines[cnt+1]);
             cnt+= 2;
         } else if line == "move"{
             let last : usize = stack.len()-1;
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
-            matrix_mult(&mut stack[last], &mut make_translate(args[0], args[1], args[2]));
+            let tmp = &mut make_translate(args[0], args[1], args[2]);
+            matrix_mult(&mut stack[last], tmp);
+            stack[last] = tmp.clone();
             println!("move {}", lines[cnt+1]);
             cnt+= 2;
         } else if line == "rotate"{
@@ -79,13 +79,19 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             let last : usize = stack.len()-1;
             if args[0] == "x"{
                 println!("\nRotating Frame about x at {} degrees", args[1]);
-                matrix_mult(&mut stack[last], &mut make_rotX(args[1].parse::<f64>().unwrap()));
+                let tmp = &mut make_rotX(args[1].parse::<f64>().unwrap());
+                matrix_mult(&mut stack[last], tmp);
+                stack[last] = tmp.clone();
             } else if args[0] == "y"{
                 println!("\nRotating Frame about y at {} degrees", args[1]);
-                matrix_mult(&mut stack[last], &mut make_rotY(args[1].parse::<f64>().unwrap()));
+                let tmp = &mut make_rotY(args[1].parse::<f64>().unwrap());
+                matrix_mult(&mut stack[last], tmp);
+                stack[last] = tmp.clone();
             } else if args[0] == "z"{
                 println!("\nRotating Frame about z at {} degrees", args[1]);
-                matrix_mult(&mut stack[last], &mut make_rotZ(args[1].parse::<f64>().unwrap()));
+                let tmp = &mut make_rotZ(args[1].parse::<f64>().unwrap());
+                matrix_mult(&mut stack[last], tmp);
+                stack[last] = tmp.clone();
             } else {
                 println!("Could not rotate due to no axis being specified");
             }
@@ -135,9 +141,9 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             let last : usize= stack.len()-1;
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             println!("\nDrawing torus {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);
-            add_torus(&mut tmp, args[0], args[1], args[2], args[3], args[4], STEP2); // 
+            add_torus(&mut tmp, args[0], args[1], args[2], args[3], args[4], STEP2); //
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_polygons(&mut tmp, &mut s, [0, 0, 0], IS_BACKFACE_CULLED);  
+            draw_polygons(&mut tmp, &mut s, [0, 0, 0], IS_BACKFACE_CULLED);
             cnt += 2;
         } else if line == "display"{
             display(&mut s);
