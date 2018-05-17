@@ -31,7 +31,9 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
 
     let reader = BufReader::new(f);
 
-    stack.push(new_matrix(4, 4));
+    let mut stack_top = new_matrix(4,4);
+    ident(&mut stack_top);
+    stack.push(stack_top);
 
     let lines : Vec<String> = reader.lines().map(|l| l.unwrap()).collect();
     let mut cnt = 0;
@@ -39,7 +41,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         let line = &lines[cnt];
         let mut tmp = new_matrix(4, 4);
         if line == "push"{
-            match stack.clone().last() {
+            match stack.clone().last() { // stack.clone().last()
                 Some(x) => { stack.push(x.clone()); print_matrix(&mut x.clone())},
                 None => println!("there's literally no top of the stack"),
             }
@@ -61,7 +63,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         } else if line == "scale"{
             let last : usize = stack.len()-1;
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
-            let tmp = &mut make_scale(args[0], args[1], args[2]);
+            let mut tmp = &mut make_scale(args[0], args[1], args[2]);
             matrix_mult(&mut stack[last], tmp);
             stack[last] = tmp.clone();
             println!("scale {}", lines[cnt+1]);
@@ -69,7 +71,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         } else if line == "move"{
             let last : usize = stack.len()-1;
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
-            let tmp = &mut make_translate(args[0], args[1], args[2]);
+            let mut tmp = &mut make_translate(args[0], args[1], args[2]);
             matrix_mult(&mut stack[last], tmp);
             stack[last] = tmp.clone();
             println!("move {}", lines[cnt+1]);
