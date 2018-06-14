@@ -4,7 +4,7 @@ use std::fs::File;
 
 pub use matrix::*;
 pub use draw::*;
-pub use display::{save_ppm, clear_screen, display};
+pub use display::{save_ppm, clear_screen, display, zbuffer, clear_zbuffer};
 
 const STEP:f64 = 0.01;
 const STEP2:i64 = 10;
@@ -12,7 +12,7 @@ const HERMITE:i64 = 0;
 const BEZIER:i64 = 1;
 const IS_BACKFACE_CULLED:bool = true;
 
-pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>){
+pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>, mut zb : zbuffer){
 
     let f = File::open(f_name);
 
@@ -31,6 +31,8 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
 
     let reader = BufReader::new(f);
 
+    clear_zbuffer(&mut zb);
+
     let mut stack_top = new_matrix(4,4);
     ident(&mut stack_top);
     stack.push(stack_top);
@@ -41,7 +43,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
         let line = &lines[cnt];
         let mut tmp = new_matrix(4, 4);
         if line == "push"{
-            match stack.clone().last() { // stack.clone().last()
+            match stack.clone().last() {
                 Some(x) => { stack.push(x.clone()); print_matrix(&mut x.clone())},
                 None => println!("there's literally no top of the stack"),
             }
@@ -57,7 +59,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             let args = lines[cnt+1].split(" ").map(|l| l.parse::<f64>().unwrap()).collect::<Vec<f64>>();
             add_edge(&mut tmp, args[0], args[1], args[2], args[3], args[4], args[5]);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_lines(&mut tmp, &mut s, [0, 0, 0]);
+            draw_lines(&mut tmp, &mut s, &mut zb, [0, 0, 0]);
             println!("line {:?}", lines[cnt+1]);
             cnt+= 2;
         } else if line == "scale"{
@@ -105,7 +107,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing circle {} {} {} {}", args[0], args[1], args[2], args[3]);
             add_circle(&mut tmp, args[0], args[1], args[2], args[3], STEP);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_lines(&mut tmp, &mut s, [0, 0, 0]);
+            draw_lines(&mut tmp, &mut s, &mut zb, [0, 0, 0]);
             cnt += 2;
         } else if line == "hermite"{
             let last : usize = stack.len()-1;
@@ -113,7 +115,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing hermite curve {} {} {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
             add_curve(&mut tmp, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], STEP, HERMITE);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_lines(&mut tmp, &mut s, [0, 0, 0]);
+            draw_lines(&mut tmp, &mut s, &mut zb, [0, 0, 0]);
             cnt += 2;
         } else if line == "bezier"{
             let last : usize= stack.len()-1;
@@ -121,7 +123,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing bezier curve {} {} {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
             add_curve(&mut tmp, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], STEP, BEZIER);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_lines(&mut tmp, &mut s, [0, 0, 0]);
+            draw_lines(&mut tmp, &mut s, &mut zb, [0, 0, 0]);
             cnt += 2;
         } else if line == "box"{
             let last : usize= stack.len()-1;
@@ -129,7 +131,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing box {} {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4], args[5]);
             add_box(&mut tmp, args[0], args[1], args[2], args[3], args[4], args[5]);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_polygons(&mut tmp, &mut s, [0, 0, 0], IS_BACKFACE_CULLED);
+            draw_polygons(&mut tmp, &mut s, &mut zb, [0, 0, 0], IS_BACKFACE_CULLED);
             cnt += 2;
         } else if line == "sphere"{
             let last : usize= stack.len()-1;
@@ -137,7 +139,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing sphere {} {} {} {}", args[0], args[1], args[2], args[3]);
             add_sphere(&mut tmp, args[0], args[1], args[2], args[3], STEP2);
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_polygons(&mut tmp, &mut s, [0, 0, 0], IS_BACKFACE_CULLED);
+            draw_polygons(&mut tmp, &mut s, &mut zb, [0, 0, 0], IS_BACKFACE_CULLED);
             cnt += 2;
         } else if line == "torus"{
             let last : usize= stack.len()-1;
@@ -145,15 +147,18 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>)
             println!("\nDrawing torus {} {} {} {} {}", args[0], args[1], args[2], args[3], args[4]);
             add_torus(&mut tmp, args[0], args[1], args[2], args[3], args[4], STEP2); //
             matrix_mult(&mut stack[last], &mut tmp);
-            draw_polygons(&mut tmp, &mut s, [0, 0, 0], IS_BACKFACE_CULLED);
+            draw_polygons(&mut tmp, &mut s, &mut zb, [0, 0, 0], IS_BACKFACE_CULLED);
             cnt += 2;
         } else if line == "display"{
             display(&mut s);
             cnt += 1;
-        } else if line == "save" {
+        } else if line == "save"{
             save_ppm(&mut s, lines[cnt+1].to_string()); // will fix this eventually
             println!("save {:?}", lines[cnt+1]);
             cnt += 2;
+        } else if line == "clear"{
+            clear_screen(&mut s);
+            clear_zbuffer(&mut zb);
         } else{
             println!("Unrecognized cmd {}. Moving on.", lines[cnt]);
             cnt += 1;

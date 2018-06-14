@@ -3,6 +3,7 @@ use std::io::Write;
 use std::vec::Vec;
 use std::process::{Command, Stdio};
 use std::error::Error;
+use std::f64;
 
 const XRES:i64 = 500;
 const YRES:i64 = 500;
@@ -12,6 +13,27 @@ const GREEN:usize = 1;
 const BLUE:usize = 2;
 
 static DEFAULT_COLOR : [i64; 3] = [255, 255, 255];
+
+pub type zbuffer = Vec<Vec<f64>>;
+
+pub fn new_zbuffer(width: i64, height : i64) -> zbuffer{
+    let mut zbuf : zbuffer = Vec::new();
+    for y in 0..width {
+        let tmp = y as usize;
+        let mut col : Vec<f64> = Vec::new();
+        zbuf.push(col);
+        for _x in 0..height {
+            &zbuf[tmp].push(0.); // equiv to what calloc does
+        }
+    }
+    return zbuf;  
+}
+
+pub fn clear_zbuffer(zb : &mut zbuffer){
+    for mut _i in zb.iter().flat_map(|it| it) {
+        _i = &f64::MIN;
+    }
+}
 
 pub fn new_screen(width : i64, height : i64) -> Vec<Vec<[i64; 3]>>{
     let mut screen : Vec<Vec<[i64; 3]>> = Vec::new();
@@ -26,14 +48,13 @@ pub fn new_screen(width : i64, height : i64) -> Vec<Vec<[i64; 3]>>{
     return screen;
 }
 
-pub fn plot( screen : &mut Vec<Vec<[i64; 3]>>, color : [i64; 3], x : i64, y : i64){
+pub fn plot( screen : &mut Vec<Vec<[i64; 3]>>, zb : &mut zbuffer, color : [i64; 3], x : i64, y : i64, z : f64){
     let newy : i64 = YRES - 1 - y;
-    if x >= 0 &&  x < XRES && newy >= 0 && newy < YRES {
+    if x >= 0 &&  x < XRES && newy >= 0 && newy < YRES && z >= zb[x as usize][y as usize]{
         let ny = newy as usize;
         let nx = x as usize;
-        screen[ny][nx][0] = color[0];
-        screen[ny][nx][1] = color[1];
-        screen[ny][nx][2] = color[2];
+        screen[ny][nx] = color;
+        zb[nx][ny] = z;
     }
 }
 

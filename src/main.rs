@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
 #![allow(unused_mut)]
+#![allow(non_camel_case_types)]
 
 extern crate clap;
 use clap::{App};
@@ -28,8 +29,9 @@ fn main() {
 
     let screen = display::new_screen(500, 500);
     let stack : Vec<matrix::Matrix> = Vec::new();
+    let zb = display::new_zbuffer(500, 500); // dummy width and height for now; change later
 
-    parser::parse("cmd.dw", stack, screen);
+    parser::parse("cmd.dw", stack, screen, zb);
     // display(screen);
     // save_extension(screen, 'img.png');
 }
