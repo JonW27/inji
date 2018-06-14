@@ -62,7 +62,7 @@ pub fn scanline_convert(p : &mut Matrix, i : i64, s : &mut Vec<Vec<[i64; 3]>>, z
 
     let mut dx0 : f64 = if (yT - yB) > 0. {(xT - xB) / (yT - yB)} else {0.};
     let mut dx1 : f64 = if (yM - yB) > 0. {(xM - xB) / (yM - yB)} else {0.};
-    let mut dz0 : f64 = if (yT - yB) > 0. {(zB - zT) / (yT - yB)} else {0.};
+    let mut dz0 : f64 = if (yT - yB) > 0. {(zT - zB) / (yT - yB)} else {0.};
     let mut dz1 : f64 = if (yM - yB) > 0. {(zM - zB) / (yM - yB)} else {0.};
 
     while y < yT {
@@ -313,7 +313,7 @@ pub fn draw_lines( points : &mut Matrix, s : &mut Vec<Vec<[i64; 3]>>, zb : &mut 
 }
 
 pub fn draw_line( mut x0 : i64, mut y0 : i64, mut z0 : f64,  x1 : i64, y1 : i64, mut z1 : f64, s : &mut Vec<Vec<[i64; 3]>>, zb : &mut zbuffer, c : [i64; 3] ){
-    if x0 > x1{ return draw_line(x1, y1, z1, x0, y0, z0, s, zb, c); }
+    if x0 > x1 { return draw_line(x1, y1, z1, x0, y0, z0, s, zb, c); }
     let (mut d, mut A, mut B, mut dy_east, mut dy_northeast, mut dx_east, mut dx_northeast, mut d_east, mut d_northeast, mut loop_start, mut loop_end) : (i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64);
     let (mut wide, mut tall) = (false, false);
     let (mut distance, mut dz) : (f64, f64);
@@ -379,63 +379,4 @@ pub fn draw_line( mut x0 : i64, mut y0 : i64, mut z0 : f64,  x1 : i64, y1 : i64,
         loop_start += 1;
     }
         display::plot( s, zb, c, x1, y1, z1 );
-
-    /*let (mx, my) = (x1 - x0, y1 - y0);
-    if x0 > x1 { // we want the (x1,y1) pair to always be greater so we switch
-        return draw_line(x1, y1, x0, y0, s, c);
-    }
-    let (A, B) = (my, -1 * (mx));
-    let mut d : i64;
-    if my > 0{ // first quadrant
-        if mx > my  { // first octant
-            d = 2*A + B;
-            while x0 <= x1 {
-                display::plot(s, c, x0, y0);
-                if d > 0 {
-                    y0 += 1;
-                    d += 2*B;
-                }
-                x0 += 1;
-                d += 2*A;
-            }
-        }
-        else{ // second octant
-            d = A + 2*B;
-            while y0 <= y1 {
-                display::plot(s, c, x0, y0);
-                if d < 0 {
-                    x0 += 1;
-                    d += 2*A;
-                }
-                y0 += 1;
-                d += 2*B;
-            }
-        }
-    }
-    else { // quadrant 4
-        if mx + my < 0 { // octant 7, mx is always positive so my would need to be less to satisfy
-            d = A - 2*B;
-            while y0 >= y1 {
-                display::plot(s, c, x0, y0);
-                if d > 0 {
-                    x0 += 1;
-                    d += 2*A;
-                }
-                y0 -= 1;
-                d -= 2*B;
-            }
-        }
-        else { // octant 8
-            d = 2*A - B;
-            while x0 <= x1 {
-                display::plot(s, c, x0, y0);
-                if d < 0 {
-                    y0 -= 1;
-                    d -= 2*B;
-                }
-                x0 += 1;
-                d += 2*A;
-            }
-        }
-    }*/
 }

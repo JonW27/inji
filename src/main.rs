@@ -29,7 +29,7 @@ fn main() {
 
     let screen = display::new_screen(500, 500);
     let stack : Vec<matrix::Matrix> = Vec::new();
-    let zb = display::new_zbuffer(500, 500); // dummy width and height for now; change later
+    let zb = display::new_zbuffer(500, 500); // xres + yres
 
     parser::parse("cmd.dw", stack, screen, zb);
     // display(screen);

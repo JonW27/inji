@@ -26,7 +26,7 @@ pub fn parse(f_name : &str, mut stack : Vec<Matrix>, mut s : Vec<Vec<[i64; 3]>>,
     println!("<================ Parsing File {} ================>", f_name);
 
     if IS_BACKFACE_CULLED {
-        println!("The option BACKFACE_CULLED is ENABLED.");
+        println!("The option BACKFACE_CULLING is ENABLED.");
     }
 
     let reader = BufReader::new(f);
