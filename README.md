@@ -14,6 +14,8 @@ Includes:
 * 3D Toruses
 * Polygonal Surfaces (triangles)
 * ~~Broken~~ backface culling
-* Broken RCS
+* ~~Broken~~ RCS
+* Zbuffering
+* ~~Broken~~ Scanline Conversion
 
 ~~I test-ran it on homer. It worked perfectly fine.~~
